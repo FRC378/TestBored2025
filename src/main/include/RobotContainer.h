@@ -5,10 +5,13 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
-
+#include "subsystems/Elevator.h"
 class RobotContainer {
  public:
   RobotContainer();
+ 
+  Elevator m_elevator;
+
 
   frc2::CommandPtr GetAutonomousCommand();
 
