@@ -50,7 +50,7 @@ void Robot::TeleopInit() {
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
-  m_container.m_elevator.SetPower(0.25);
+  //m_container.m_elevator.SetPower(0.25);
 
 
 }

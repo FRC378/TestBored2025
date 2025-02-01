@@ -5,6 +5,9 @@
 #include "subsystems/Elevator.h"
 #include <rev/config/SparkMaxConfig.h>
 #include <iostream>
+#include <frc/smartdashboard/SmartDashboard.h>
+
+
 Elevator::Elevator()
 {
  std::cout <<"Elevator"<<std::endl;
@@ -24,11 +27,37 @@ Elevator::Elevator()
  m_motor.Configure( motorConfig,
                     rev::spark::SparkMax::ResetMode::kResetSafeParameters,
                     rev::spark::SparkMax::PersistMode::kPersistParameters);
+    frc::SmartDashboard::PutNumber("SetPosition", 0);
+
+
+
 
 }
 
 // This method will be called once per scheduler run
-void Elevator::Periodic() {}
+void Elevator::Periodic() 
+{
+    frc::SmartDashboard::PutNumber("ElevatorPosition", GetPosition() );
+
+     m_goalPosition = frc::SmartDashboard::GetNumber("SetPosition", 0);
+    double currentPosition = GetPosition();
+    double error = m_goalPosition - currentPosition;
+
+    if( error > 1.0 )
+    {
+        SetPower(0.1);
+    }
+    else if( error < -1.0 )
+    {
+        SetPower(-0.1);
+    }
+    else 
+    {
+        Stop();
+    }
+
+
+}
 
 
 
@@ -47,7 +76,7 @@ void Elevator::Periodic() {}
   }
   double Elevator::GetPosition(void)
   {
-
+    return m_motorEncoder.GetPosition();
   }
   void Elevator::SetPosition(double position)
   {
@@ -55,7 +84,7 @@ void Elevator::Periodic() {}
   }
   void Elevator::SetPower(double power)
   {
-    std::cout<<"SetPower"<<std::endl;
+    //std::cout<<"SetPower"<<std::endl;
     m_motor.Set(power);
   }
 

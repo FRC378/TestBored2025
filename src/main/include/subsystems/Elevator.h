@@ -33,6 +33,7 @@ class Elevator : public frc2::SubsystemBase {
  rev::spark::SparkMax m_motor{33,rev::spark::SparkMax::MotorType::kBrushless};
  rev::spark::SparkRelativeEncoder m_motorEncoder = m_motor.GetEncoder();
  rev::spark::SparkClosedLoopController m_motorPID = m_motor.GetClosedLoopController();
+ double m_goalPosition;
 
 
 
