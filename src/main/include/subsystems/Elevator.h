@@ -15,13 +15,14 @@ class Elevator : public frc2::SubsystemBase {
 
   void Stop(void);
 
-  bool GetLowerLimitSwitch(void);
-  bool GetUpperLimitSwitch(void);
+  bool   GetLowerLimitSwitch(void);
+  bool   GetUpperLimitSwitch(void);
   double GetPosition(void);
-  void SetPosition(double position);
-  void SetPower(double power);
 
+  void   SetPosition(double position);
+  void   SetPower(double power);
 
+  void   ZeroEncoder(void);
 
 
 

@@ -6,6 +6,9 @@
 
 #include <frc2/command/CommandScheduler.h>
 
+//Global Objects
+RobotContainer g_robotContainer;  
+
 Robot::Robot() 
 {
   //*************************** INIT ******************************
@@ -13,8 +16,9 @@ Robot::Robot()
   cout<<"FRC2025: Project TestBored"<<endl;
   cout<<"Version: " << __DATE__ <<"  "<<__TIME__<<endl<<endl; 
 
-  //Hello!   I made a change!
-  
+
+  //Init
+  g_robotContainer.m_elevator.ZeroEncoder();
 
 
 }
@@ -25,7 +29,7 @@ void Robot::RobotPeriodic() {
 
 void Robot::DisabledInit() 
 {
-  m_container.m_elevator.Stop();
+  g_robotContainer.m_elevator.Stop();
 
 
 }
@@ -35,7 +39,7 @@ void Robot::DisabledPeriodic() {}
 void Robot::DisabledExit() {}
 
 void Robot::AutonomousInit() {
-  m_autonomousCommand = m_container.GetAutonomousCommand();
+  m_autonomousCommand = g_robotContainer.GetAutonomousCommand();
 
   if (m_autonomousCommand) {
     m_autonomousCommand->Schedule();
@@ -50,7 +54,7 @@ void Robot::TeleopInit() {
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
-  //m_container.m_elevator.SetPower(0.25);
+
 
 
 }

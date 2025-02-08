@@ -14,6 +14,8 @@ using namespace std;
 
 #include "RobotContainer.h"
 
+extern RobotContainer g_robotContainer;  //Make RobotContainer Global
+
 class Robot : public frc::TimedRobot {
  public:
   Robot();
@@ -30,9 +32,9 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
   void TestExit() override;
-  RobotContainer m_container;
+
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
 
-  
+  //RobotContainer m_container; //Nope!!!
 };

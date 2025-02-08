@@ -11,6 +11,8 @@
 Elevator::Elevator()
 {
  std::cout <<"Elevator"<<std::endl;
+
+
  //SparkMaxConfigurator
  rev::spark::SparkMaxConfig motorConfig;
  
@@ -18,16 +20,27 @@ Elevator::Elevator()
         .SetIdleMode(rev::spark::SparkBaseConfig::IdleMode::kBrake)
         .SmartCurrentLimit(50)
         .Inverted(false)
-        .ClosedLoopRampRate(0.3);
+        .OpenLoopRampRate(0.3);
+//      .ClosedLoopRampRate(0.3);
 
  motorConfig.encoder
-        .PositionConversionFactor(1.0)
-        .VelocityConversionFactor(1.0);
+        .PositionConversionFactor(1.0)        //Stick with Rotations as a position
+        .VelocityConversionFactor(1.0);       //Stick with RPM as a velocity
+
+  motorConfig.closedLoop
+            .SetFeedbackSensor(rev::spark::ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+            .Pid(0.05, 0, 0)
+            .OutputRange(-.09, 0.1);
+
+  motorConfig.closedLoop.maxMotion
+            .MaxVelocity( 1000.0 )
+            .MaxAcceleration ( 1500.0 )
+            .AllowedClosedLoopError( 0.1 );
+
 
  m_motor.Configure( motorConfig,
                     rev::spark::SparkMax::ResetMode::kResetSafeParameters,
                     rev::spark::SparkMax::PersistMode::kPersistParameters);
-    frc::SmartDashboard::PutNumber("SetPosition", 0);
 
 
 
@@ -37,24 +50,35 @@ Elevator::Elevator()
 // This method will be called once per scheduler run
 void Elevator::Periodic() 
 {
-    frc::SmartDashboard::PutNumber("ElevatorPosition", GetPosition() );
 
-     m_goalPosition = frc::SmartDashboard::GetNumber("SetPosition", 0);
-    double currentPosition = GetPosition();
-    double error = m_goalPosition - currentPosition;
+  //Elevator Debugging
+  frc::SmartDashboard::PutNumber("ElevatorPosition", GetPosition() );
+  frc::SmartDashboard::PutBoolean("ElevatorUpperSw", GetUpperLimitSwitch() );
+  frc::SmartDashboard::PutBoolean("ElevatorLowerSw", GetLowerLimitSwitch() );
 
-    if( error > 1.0 )
-    {
-        SetPower(0.1);
-    }
-    else if( error < -1.0 )
-    {
-        SetPower(-0.1);
-    }
-    else 
-    {
-        Stop();
-    }
+  frc::SmartDashboard::PutNumber("ElevatorVelocity", m_motorEncoder.GetVelocity() );
+
+
+
+    //  m_goalPosition = frc::SmartDashboard::GetNumber("SetPosition", 0);
+    // double currentPosition = GetPosition();
+    // double error = m_goalPosition - currentPosition;
+
+    // if( error > 1.0 )
+    // {
+    //     SetPower(0.1);
+    // }
+    // else if( error < -1.0 )
+    // {
+    //     SetPower(-0.1);
+    // }
+    // else 
+    // {
+    //     Stop();
+    // }
+
+
+
 
 
 }
@@ -68,18 +92,24 @@ void Elevator::Periodic()
   
   bool Elevator::GetLowerLimitSwitch(void)
   {
-   
+    return m_motor.GetReverseLimitSwitch().Get();
   }
   bool Elevator::GetUpperLimitSwitch(void)
   {
-
+    return m_motor.GetForwardLimitSwitch().Get();
   }
+
   double Elevator::GetPosition(void)
   {
     return m_motorEncoder.GetPosition();
   }
   void Elevator::SetPosition(double position)
   {
+    //m_motorPID.SetReference( position, rev::spark::SparkMax::ControlType::kPosition );  //Default PID
+
+    m_motorPID.SetReference( position, rev::spark::SparkMax::ControlType::kMAXMotionPositionControl );  //MaxMotion
+
+    //m_motorPID.SetReference( position, rev::spark::SparkMax::ControlType::kPosition, rev::spark::kSlot0, 0.01 );  //Arbitrary feed forward
 
   }
   void Elevator::SetPower(double power)
@@ -88,7 +118,10 @@ void Elevator::Periodic()
     m_motor.Set(power);
   }
 
-
+ void   Elevator::ZeroEncoder(void)
+ {
+    m_motorEncoder.SetPosition(0.0);
+ }
 
 
 
