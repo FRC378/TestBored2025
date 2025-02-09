@@ -9,6 +9,7 @@
 #include "commands/CmdPrintText.h"
 #include "commands/CmdElevatorSetPosition.h"
 #include "commands/CmdElevatorDefault.h"
+#include "commands/CmdWhileTrueTest.h"
 
 RobotContainer::RobotContainer() 
 {
@@ -29,14 +30,25 @@ void RobotContainer::ConfigureBindings()
 {
 
   //Controller Buttons
-  m_ctrl_AButton.OnTrue( new CmdPrintText("A Button"));
-  m_ctrl_BButton.OnTrue( new CmdPrintText("B Button"));
+  m_ctrl.A().OnTrue(new CmdPrintText("A Button"));
+  m_ctrl.B().OnTrue(new CmdPrintText("B Button"));
+  m_ctrl.X().OnTrue(new CmdPrintText("X Button"));
+  m_ctrl.Y().OnTrue(new CmdPrintText("Y Button"));
 
-  //DPad
-  m_ctrl_POVup.OnTrue(    new CmdElevatorSetPosition(10.0));
-  m_ctrl_POVdown.OnTrue(  new CmdElevatorSetPosition(0.0));
-  m_ctrl_POVleft.OnTrue(  new CmdElevatorSetPosition(7.5));
-  m_ctrl_POVright.OnTrue( new CmdElevatorSetPosition(5.0));
+  m_ctrl.RightBumper().OnTrue( new CmdPrintText("R Bumper") );
+  m_ctrl.LeftBumper().OnTrue( new CmdPrintText("L Bumper") );
+
+  m_ctrl.Start().OnTrue( new CmdPrintText("Start") );
+
+  m_ctrl.RightTrigger().WhileTrue( new CmdWhileTrueTest("R Trigger") );
+  m_ctrl.LeftTrigger().WhileTrue(  new CmdWhileTrueTest("L Trigger") );
+
+
+  // DPAD
+  m_ctrl.POVUp().OnTrue(    new CmdElevatorSetPosition(10.0) );
+  m_ctrl.POVLeft().OnTrue(  new CmdElevatorSetPosition( 7.0) );
+  m_ctrl.POVRight().OnTrue( new CmdElevatorSetPosition( 5.0) );
+  m_ctrl.POVDown().OnTrue(  new CmdElevatorSetPosition( 0.0) );
 
 
 }
